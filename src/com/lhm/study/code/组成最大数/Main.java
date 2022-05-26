@@ -1,4 +1,4 @@
-package com.lhm.study.code;
+package com.lhm.study.code.组成最大数;
 
 import java.util.Arrays;
 import java.util.Scanner;
