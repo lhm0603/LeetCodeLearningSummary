@@ -579,5 +579,179 @@ public class Main {
 }
 ```
 
+# 【第7题】字符串最后一个单词的长度
+
+计算字符串最后一个单词的长度，单词以空格隔开，字符串长度小于5000。（注：字符串末尾不以空格为结尾）
+
+## 输入描述
+
+输入一行，代表要计算的字符串，非空，长度小于5000。
+
+## 输出描述
+
+输出一个整数，表示输入字符串最后一个单词的长度。
+
+## 示例一
+
+- 输入
+
+  ```bash
+  hello nowcoder
+  ```
+
+- 输出
+
+  ```bash
+  8
+  ```
+
+* 说明
+
+  最后一个单词为`nowcoder`，长度为8
+
+## 解题
+
+1. 这道题目很简单，特别是已经强调最后不以空格结尾，所以其实只要通过字符串的`lastIndexOf`找出最后一个空格的下标即可截取最后一个单词的内容，并输出单词长度。
+2. 若找不到最后一个空格的下标，则表示整个字符串是一个单词。直接输出字符串长度即可
+
+## java代码
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        String words = input.nextLine();
+        int index = words.lastIndexOf(" ");
+        if (index < 0) {// 找不到空格下标，表示只输入是一个单词
+            System.out.println(words.length());
+            return;
+        }
+        String word = words.substring(index + 1);//截取最后一个空格后面的部分字符串
+        System.out.println(word.length());
+    }
+}
+```
+
+
+# 【第8题】明明的随机数
+
+明明生成了*N*个1到500之间的随机整数。请你删去其中重复的数字，即相同的数字只保留一个，把其余相同的数去掉，然后再把这些数从小到大排序，按照排好的顺序输出。
+
+数据范围：`1≤n≤1000` ，输入的数字大小满足 `1≤val≤500`
+
+## 输入描述
+
+第一行先输入随机整数的个数 N 。 接下来的 N 行每行输入一个整数，代表明明生成的随机数。 具体格式可以参考下面的"示例"。
+
+## 输出描述
+
+输出多行，表示输入数据处理后的结果
+
+## 示例一
+
+- 输入
+
+  ```bash
+  3
+  2
+  2
+  1
+  ```
+
+- 输出
+
+  ```bash
+  1
+  2
+  ```
+
+* 说明
+
+  ```
+  输入解释：
+  第一个数字是3，也即这个小样例的N=3，说明用计算机生成了3个1到500之间的随机整数，接下来每行一个随机数字，共3行，也即这3个随机数字为：
+  2
+  2
+  1
+  所以样例的输出为：
+  1
+  2
+  ```
+
+## 解题
+
+1. 去重，可以使用Set集合。
+2. 从小到大排序，即升序。所以直接使用TreeSet即可。TreeSet内部已经根据自然升序排列。
+3. 注意输出要换行输出
+
+## java代码
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        int len = input.nextInt();
+        TreeSet<Integer> result = new TreeSet<>();
+        for (int i = 0; i < len; i++) {
+            result.add(input.nextInt());
+        }
+        for (Integer num : result) {
+            System.out.println(num);
+        }
+    }
+}
+```
+
+# 【第9题】字符串最后一个单词的长度
+
+写出一个程序，接受一个由字母、数字和空格组成的字符串，和一个字符，然后输出输入字符串中该字符的出现次数。（不区分大小写字母）
+
+数据范围： `1 ≤ n ≤ 1000`
+
+## 输入描述
+
+第一行输入一个由字母和数字以及空格组成的字符串，第二行输入一个字符。
+
+## 输出描述
+
+输出输入字符串中含有该字符的个数。（不区分大小写字母）
+
+## 示例一
+
+- 输入
+
+  ```bash
+  ABCabc
+  A
+  ```
+
+- 输出
+
+  ```bash
+  2
+  ```
+
+## 解题
+
+1. 循环查找字符串进行比较即可，注意不区分大小写！
+
+## java代码
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        String content = input.nextLine().toLowerCase(Locale.ENGLISH);
+        char tag = input.nextLine().toLowerCase(Locale.ENGLISH).charAt(0);
+        int count = 0;
+        for (int i = 0; i < content.length(); i++) {
+            if (content.charAt(i) == tag) {
+                count++;
+            }
+        }
+        System.out.println(count);
+    }
+}
+```
 
 持续更新中...
