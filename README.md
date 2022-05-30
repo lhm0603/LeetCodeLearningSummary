@@ -1,5 +1,7 @@
 # LeetCodeLearningSummary
-编程算法刷题学习及总结
+[链接到CSDN博客](https://blog.csdn.net/h461415832/article/details/125016616?csdn_share_tail=%7B%22type%22%3A%22blog%22%2C%22rType%22%3A%22article%22%2C%22rId%22%3A%22125016616%22%2C%22source%22%3A%22h461415832%22%7D&ctrtid=V0GiE)
+
+[链接到Github](https://github.com/lhm0603/LeetCodeLearningSummary)
 
 
 # 【前言】
