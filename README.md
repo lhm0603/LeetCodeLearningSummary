@@ -5,459 +5,519 @@
 # 【前言】
 所有题目的解法均来自个人的思想，与网络上的解法可能略有不同。部分题目有吸收网络上的解题思想，在此感谢网上善于分享的博主！我也在此将自己刷题过程及个人解题想法整理出来，希望对你有帮助！
 > PS：所有题目均来源于网络，若有错别字欢迎指出！若答案有错误的地方，也欢迎指出，互相学习！
+>
+> 刷题ing... 持续更新中...
 
-# 【第1题】TLV编码
 
-TLV编码是按TagLengthValue格式进行编码的，一段码流中的信元用tag标识，tag在码流中唯一不重复，length表示信元value的长度，value表示信元的值，码流以某信元的tag开头，tag固定占一个字节，length固定占两个字节，字节序为小端序，现给定tlv格式编码的码流以及需要解码的信元tag，请输出该信元的value。
 
-输入码流的16进制字符中，不包括小写字母；
-且要求输出的16进制字符串中也不要包含小写字母；
-码流字符串的最大长度不超过50000个字节。
+# 【第13题】叠积木
+
+积⽊宽⾼相等，长度不等，每层只能放⼀个或拼接两个积⽊，要求每层长度相等，求最⼤层数。
 
 ## 输入描述
 
-第一行为第一个字符串 ，表示待解码信元的tag；
-输入第二行为一个字符串， 表示待解码的16进制码流；
-字节之间用空格分割。
+给定积⽊的长度，以空格分隔，例如:3 6 6 3。
 
 ## 输出描述
 
-输出一个字符串，表示待解码信元以16进制表示的value。
+如果可以搭建，返回最⼤层数，如果不可以返回-1。
 
 ## 示例一
 
 - 输入
 
   ```bash
-  31
-  32 01 00 AE 90 02 00 01 02 30 03 00 AB 32 31 31 02 00 32 33 33 01 00 CC
+  3 6 6 3
   ```
 
 - 输出
 
   ```bash
-  32 33
-  ```
-
-- 说明：
-  需要解析的信源的tag是31；
-  从码流的起始处开始匹配，tag为32的信元长度为1(01 00,小端序表示为1)；
-  第二个信元的tag为90 其长度为2；
-  第三个信元的tag为30 其长度为3；
-  第四个信元的tag为31 其长度为2(02 00)；
-  所以返回长度后面的两个字节即可 为 32 33。
-
-## 解题
-
-1. 这道题主要是要理解`小端序`的概念，其实就是两个十六进制反过来写，处理的时候需要反过来拼接
-2. 其他题目已经说的比较清楚了，tag开头占1个字节，length固定占两个字节，再根据length取出后面的value值。依次往后查询到目标tag，取出对应的value即可。
-3. 注意length的小端序处理
-
-## java代码
-
-```java
-
-public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        String tag = input.nextLine();
-        String content = input.nextLine();
-        String[] split = content.split(" ");
-        for (int i = 0; i < split.length; i++) {
-            String curTag = split[i];
-            String len1 = split[++i];
-            String len2 = split[++i];
-            int length = formatRadix16To10(len2 + len1);// 注意小端序要反过来相加
-            // 若tag不是目标，则跳过
-            if (!tag.equalsIgnoreCase(curTag)) {
-                i += length;// 跳过无用的value值，查找下一个tag
-                continue;
-            }
-            System.out.println(takeString(split, i + 1, length));
-            break;
-        }
-    }
-
-    private static String takeString(String[] strings, int start, int len) {
-        StringBuilder result = new StringBuilder();
-        for (int i = start; i < strings.length && i < start + len; i++) {
-            result.append(strings[i]).append(" ");
-        }
-        if (result.length() > 0) {
-            result.delete(result.length() - 1, result.length());
-        }
-        return result.toString();
-    }
-
-    // 字符串16进制值转10进制
-    private static int formatRadix16To10(String str) {
-        return Integer.parseInt(str, 16);
-    }
-}
-```
-
-# 【第2题】勾股数元组
-
-如果三个正整数A、B、C ,A²+B²=C²则为勾股数
-如果ABC之间两两互质，即A与B，A与C，B与C均互质没有公约数，
-则称其为勾股数元组。
-请求出给定n~m范围内所有的勾股数元组
-
-## 输入描述
-
-起始范围
-`1 < n < 10000`
-`n < m < 10000`
-
-## 输出描述
-
-ABC保证`A<B<C`
-输出格式`A B C`
-多组勾股数元组，按照A B C升序的排序方式输出。
-若给定范围内，找不到勾股数元组时，输出`Na`。
-
-## 示例一
-
-- 输入
-
-  ```bash
-  1
-  20
-  ```
-
-- 输出
-
-  ```bash
-  3 4 5
-  5 12 13
-  8 15 17
-  ```
-
-## 示例二
-
-- 输入
-
-  ```bash
-  5
-  10
-  ```
-
-- 输出
-
-  ```bash
-  Na
-  ```
-
-## 解题
-
-1. 首先，写一个函数判断两个数之间互为质数。可以用最大公约数为1的方式解决
-2. 然后根据已知条件，`a<b<c` ，可以使用三层循环，分别根据条件判断，符合条件则输出，并记录符合条件次数，若没有符合条件的结果，则循环结束后输出`Na`
-
-## java代码
-
-```java
-public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        int n = input.nextInt();
-        int m = input.nextInt();
-        int count = 0;
-        for (int a = n; a < m; a++) {
-            for (int b = a + 1; b < m; b++) {
-                for (int c = b + 1; c < m; c++) {
-                    if (hz(a, b) && hz(a, c) && hz(b, c) && a * a + b * b == c * c) {
-                        System.out.println(a + " " + b + " " + c);
-                        count++;
-                    }
-                }
-            }
-        }
-        if (count == 0) {
-            System.out.println("Na");
-        }
-    }
-
-    /**
-     * 判断n、m是否互质。思想，找不到比1大的公约数，则互为质数
-     */
-    private static boolean hz(int n, int m) {
-        int t;
-        while (m > 0) {
-            t = n % m;
-            n = m;
-            m = t;
-        }
-        return n == 1;
-    }
-}
-```
-
-# 【第3题】猴子爬山
-
-一天一只顽猴想去从山脚爬到山顶，途中经过一个有个N个台阶的阶梯，但是这猴子有一个习惯： 每一次只能跳1步或跳3步，试问猴子通过这个阶梯有多少种不同的跳跃方式？
-
-
-
-## 输入描述
-
-输入只有一个整数N（0<N<=50）此阶梯有多少个阶梯
-
-
-
-## 输出描述
-
-输出有多少种跳跃方式（解决方案数）
-
-
-
-## 示例一
-
-* 输入
-
-  ```
-  50
-  ```
-
-* 输出
-
-  ```
-  122106097
-  ```
-
-
-
-## 示例二
-
-* 输入
-
-  ```
   3
   ```
 
-* 输出
-
-  ```
-  2
-  ```
-
-
-
-## 解题
-
-分析规律：
-
-```
-台阶个数，对应跳跃方案数
-0个台阶，有1个方案。那就是不跳
-1个台阶，有1个方案。跳1个台阶（1）
-2个台阶，有1个方案。一个一个跳，跳两次（12）
-3个台阶，有2个方案。一个一个跳，跳三次。以及一次性跳三阶（123,3）
-4个台阶，有3个方案。（1234,14,34）
-5个台阶，有4个方案。（12345,125,145,345）
-6个台阶，有6个方案。（123456,1236,1256,1456,3456,36）
-7个台阶，有9个方案。（123456789....369)
-
-发现规律
-1、台阶数n小于3时，都只有一种方案。
-2、台阶数n大于等于3时，跳跃方案恰好等于(n-1)的台阶方案数+(n-3)的台阶方案数。例如：
-台阶n=6的方案数等于5的台阶方案数+3的台阶方案数。
-```
-
-## java代码
-
-```java
-public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        int num = input.nextInt();
-        int count = cal(num);
-        System.out.println(count);
-    }
-
-    private static int cal(int num) {
-        if (num < 3) {
-            return 1;
-        }
-        return cal(num - 1) + cal(num - 3);
-    }
-
-    //台阶数：0  1  2  3  4  5  6  7  8  9
-    //方案数：1  1  1  2  3  4  6  9  13 19
-}
-```
-
-# 【第4题】组成最大数
-
-小组中每位都有一张卡片，卡片上是6位内的正整数，将卡片连起来可以组成多种数字，计算组成的最大数字。
-
-
-
-## 输入描述
-
-“,”号分割的多个正整数字符串，不需要考虑非数字异常情况，小组最多25个人
-
-
-
-## 输出描述
-
-最大的数字字符串
-
-
-
-## 示例一
-
-* 输入
-
-  ```
-  22,221  
-  ```
-
-* 输出
-
-  ```
-  22221
-  ```
-
-## 示例二
-
-* 输入
-
-  ```
-  4589,101,41425,9999
-  ```
-
-* 输出
-
-  ```
-  9999458941425101
-  ```
-
-
-
-## 解题
-
-1. 按字符串自然大小排序之后，数字字符从大到小依次为9>8>7...3>2>1。
-
-2. 且 字符串“89”要大于“723”，因为字符串自然排序匹配规则是根据第一个字符比较大小，若相等，则比较下一个，超出部分摄取比对。
-
-3. 所以只需要对输入的所有数字字符串进行排序，之后按顺序输出即可！
-
-
-
-## java代码
-
-```java
-public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        String content = input.next();
-        String[] split = content.split(",");
-        Arrays.sort(split);
-        for (int i = split.length - 1; i >= 0; i--) {
-            System.out.print(split[i]);
-        }
-    }
-}
-```
-
-# 【第5题】数组对元素求和最小值
-
-给定两个整数数组，arr1、arr2，数组元素按升序排列；
-假设从arr1、arr2中分别取出一个元素，可构成一对元素；
-现在需要取出k对元素，并对取出的所有元素求和，计算和的最小值；
-注意：两对元素对应arr1、arr2的下标是相同的，视为同一对元素。
-
-## 输入描述
-
-输入两行数组arr1、arr2
-arr1，arr2中的每个元素e， `0< e <1000`
-接下来一行，正整数k `0 < k <= arr1.size * arr2.size`
-
-## 输出描述
-
-满足要求的最小值
-
-## 示例一
-
-- 输入
-
-  ```bash
-  1 1 2
-  1 2 3
-  2
-  ```
-
-- 输出
-
-  ```bash
-  4
-  ```
-
-- 说明：
-
-  用例中需要取两个元素，取第一个数组第0个元素与第二个数组第0个元素组成一个元素[1,1];
-  取第一个数组第1个元素与第二个数组第0个元素组成一个元素[1,1];
-  求和为1+1+1+1=4 ,满足要求最小。
-
 ## 示例二
 
 - 输入
 
   ```bash
-  1 2 3 4 
-  4 5 6 9
-  4
+  1 4 2 3 6
   ```
 
 - 输出
 
   ```bash
-  24
+  -1
   ```
-
-
 
 ## 解题
 
-1. 把两个数组所有可能组成的对数全部统计存入集合中，冰将集合升序排列
-2. 然后根据需要求和的个数，从集合开头取出对应个数的值进行求和即可
+1. 读懂题目的要求，积木每一层只能是1块，或者2块拼接
+2. 必须每一层的长度相等，否则算为不可搭建，则输出`-1`
+3. 分析规律：将积木长度进行排序后，最长的积木只能两种情况：1、单独一块去搭建；2、跟最小长度那一块去搭建
 
 ## java代码
 
 ```java
+import java.util.LinkedList;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        String arr1Str = input.nextLine();
-        String arr2Str = input.nextLine();
-        int count = input.nextInt();
-        int[] arr1 = parseArr(arr1Str);
-        int[] arr2 = parseArr(arr2Str);
-        ArrayList<Integer> allSum = new ArrayList<>(arr1.length * arr2.length);
-        for (int n : arr1) {
-            for (int m : arr2) {
-                allSum.add(n + m);
-            }
+        String s = input.nextLine();
+        String[] split = s.split(" ");
+        LinkedList<Integer> list = new LinkedList<>();
+        for (String ss : split) {
+            list.add(Integer.parseInt(ss));
         }
-        Collections.sort(allSum);
-        int sum = 0;
-        for (int i = 0; i < count; i++) {
-            sum += allSum.get(i);
+        // 降序排列
+        list.sort((o1, o2) -> o2 - o1);
+        int deal = deal(list);
+        System.out.println(deal);
+    }
+
+    private static int deal(LinkedList<Integer> list) {
+        if (list.size() == 0) {// 没有积木，0层
+            return 0;
         }
-        System.out.println(sum);
+        int count = 1;
+        if (list.size() == 1) {// 只有1块积木，只有1层
+            return count;
+        }
+        LinkedList<Integer> temp = new LinkedList<>(list);// 拷贝一份数据备用
+        int result = recur(temp, temp.removeFirst(), count);// 处理最长那一块单独作为1层的情况
+        if (result > 0) {
+            return result;// 若搭建成功，肯定比下面那种情况层数要多
+        }
+        // 若上面情况搭建不成功，则将最长那一块与最短那一块作为一层，继续分析处理
+        int base = list.removeFirst() + list.removeLast();
+        return recur(list, base, count);
     }
 
     /**
-     * 将输入格式转化为int数组
+     * @param list  所有积木
+     * @param base  地基长度
+     * @param count 层数
      */
-    private static int[] parseArr(String arrStr) {
-        String[] strings = arrStr.split(" ");
-        int[] arr = new int[strings.length];
-        for (int i = 0; i < strings.length; i++) {
-            arr[i] = Integer.parseInt(strings[i]);
+    private static int recur(LinkedList<Integer> list, int base, int count) {
+        if (list.size() == 0) {
+            return count;// 且整个递归过程没有执行最后的return -1，且积木刚好用完。则返回层数
         }
-        return arr;
+        Integer value = list.removeFirst();//移除剩下最长那一块去跟地基比较
+        if (value == base) {// 表示当前这块与地基长度也相同
+            return recur(list, base, count + 1);// 匹配成功，层级+1
+        }
+        if (list.size() > 0) {// 若还有积木，则取出最小的那一块加上上面所剩最长那一块去与地基比较
+            Integer integer = list.removeLast();
+            if (value + integer == base) {
+                return recur(list, base, count + 1);// 匹配成功，层级+1
+            }
+        }
+        return -1;// 若上诉情况都不符合，则表示积木已经无法满足题目要求，返回-1
+    }
+}
+
+```
+
+# 【第12题】质素因子
+
+功能：输入一个正整数，按照从小到大的顺序输出它的所有质因子（重复的也要列举）（如180的质因子为2 2 3 3 5 ）
+
+数据范围：
+$$
+1 ≤ n ≤ 2 × 10^9 + 14
+$$
+
+## 输入描述
+
+输入一个整数
+
+## 输出描述
+
+按照从小到大的顺序输出它的所有质数的因子，以空格隔开。
+
+## 示例一
+
+- 输入
+
+  ```bash
+  180
+  ```
+
+- 输出
+
+  ```bash
+  2 2 3 3 5
+  ```
+
+
+## 解题
+
+1. 这道题目一开始看确实有点懵，题目是要求分解质因数，只是要求所有因数都是质数。
+2. 注意数据范围达到long的取值范围，一不小心就会性能超标
+3. 这道题折腾了两三次，终于是通过了所有测试用例。（特别是：2000000014，一不小心就性能超标）
+4. 其他的解题思路请看代码注释，不一定是最优解，但是通过了。
+5. 如果不对的地方，请指出！谢谢
+
+## java代码
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        long num = input.nextLong();
+        deal(num);
+    }
+
+    private static void deal(long num) {
+        long realNum = num;
+        double sqrt = Math.sqrt(num);
+        long prime = 2;// 当前可疑质素因子
+        ArrayList<Long> list = new ArrayList<>();
+        while (true) {
+            if (num % prime == 0) {
+                list.add(prime);//找到质数因子
+                num = num / prime;//更新num，对新的num循环查找下一个质数因子
+                continue;
+            }
+            prime = nextPrime(prime);
+            if (num < prime || prime > sqrt) {
+                // 若可以质数因子超过num本身，或者质数因子超过原始num的平方根，则无需继续查找下去。但有一种特殊情况
+                break;
+            }
+        }
+        // 特殊情况，存在质数因子比原始正整数num的平方根还大的情况，但这种情况下，只会存在1个比num的平方根大的质数因子
+        if (num > prime && realNum % num == 0) {
+            list.add(num);
+        }
+        if (list.size() == 0) {
+            list.add(num);// 若没有找到质数因子，则输出其本身
+        }
+
+        // 拼接输出，虽然最后多一个空格也可以通过，强逼症去掉最后空格
+        StringBuilder sb = new StringBuilder();
+        for (Long l : list) {
+            sb.append(l).append(' ');
+        }
+        System.out.println(sb.delete(sb.length() - 1, sb.length()));
+    }
+
+    /**
+     * 查找n的下一个质素
+     */
+    private static long nextPrime(long n) {
+        long m = n + 1;
+        if (isPrime(m)) {
+            return m;
+        }
+        return nextPrime(m);
+    }
+
+    /**
+     * 判断一个数是否是质数
+     */
+    private static boolean isPrime(long n) {
+        if (n < 2) {
+            return false;
+        }
+        double sqrt = Math.sqrt(n);
+        for (long i = 2; i <= sqrt; i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+```
+
+
+# 【第11题】进制转换
+
+写出一个程序，接受一个十六进制的数，输出该数值的十进制表示。
+
+数据范围：保证结果在
+$$
+1 ≤ n ≤ 2^{31} - 1
+$$
+
+
+## 输入描述
+
+输入一个十六进制的数值字符串。
+
+## 输出描述
+
+输出该数值的十进制字符串。
+
+## 示例一
+
+- 输入
+
+  ```bash
+  0xAA
+  ```
+
+- 输出
+
+  ```bash
+  170
+  ```
+
+## 解题
+
+1. 题目已经将值结果保证在Integer取值范围，所以可以直接使用Integer
+2. 注意用例，16进制开头是包含`0x`的，而Java的`Integer.parseInt` 是不包含`0x`的
+
+## java代码
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        String rex = input.nextLine();
+        // substring(2) ，这里需要去掉前面两位 0x
+        System.out.println(Integer.parseInt(rex.substring(2), 16));
+    }
+}
+```
+
+# 【第10题】字符串分割
+
+* 输入一个字符串，请按长度为8拆分每个输入字符串并进行输出；
+* 长度不是8整数倍的字符串请在后面补数字0，空字符串不处理。
+
+## 输入描述
+
+连续输入字符串(每个字符串长度小于等于100)
+
+## 输出描述
+
+依次输出所有分割后的长度为8的新字符串
+
+## 示例一
+
+- 输入
+
+  ```bash
+  abc
+  ```
+
+- 输出
+
+  ```bash
+  abc00000
+  ```
+
+## 解题
+
+1. 这道题的解法应该有N多种，我的想法是每次循环8次，从输入的字符串s中依次往后取8个字符，若s字符串已经被使用完，则补0。
+2. 每一轮8次循环结束后，判断字符串s是不是已经用完。则结束循环。
+3. 注意空字符串不处理。
+
+## java代码
+
+```java
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        deal(input.nextLine());
+    }
+
+    private static void deal(String s) {
+        int index = 0;
+        int length = s.length();
+        while (index < length) {// 结束条件，包含空字符串情况
+            StringBuilder sb = new StringBuilder(8);
+            for (int i = 0; i < 8; i++) {
+                if (index < length) {
+                    sb.append(s.charAt(index));
+                } else {
+                    sb.append('0');// 若字符已经用完，下标已越界，则追加0
+                }
+                index++;
+            }
+            System.out.println(sb);
+        }
+    }
+}
+
+```
+
+# 【第9题】字符串最后一个单词的长度
+
+写出一个程序，接受一个由字母、数字和空格组成的字符串，和一个字符，然后输出输入字符串中该字符的出现次数。（不区分大小写字母）
+
+数据范围： `1 ≤ n ≤ 1000`
+
+## 输入描述
+
+第一行输入一个由字母和数字以及空格组成的字符串，第二行输入一个字符。
+
+## 输出描述
+
+输出输入字符串中含有该字符的个数。（不区分大小写字母）
+
+## 示例一
+
+- 输入
+
+  ```bash
+  ABCabc
+  A
+  ```
+
+- 输出
+
+  ```bash
+  2
+  ```
+
+## 解题
+
+1. 循环查找字符串进行比较即可，注意不区分大小写！
+
+## java代码
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        String content = input.nextLine().toLowerCase(Locale.ENGLISH);
+        char tag = input.nextLine().toLowerCase(Locale.ENGLISH).charAt(0);
+        int count = 0;
+        for (int i = 0; i < content.length(); i++) {
+            if (content.charAt(i) == tag) {
+                count++;
+            }
+        }
+        System.out.println(count);
+    }
+}
+```
+
+# 【第8题】明明的随机数
+
+明明生成了*N*个1到500之间的随机整数。请你删去其中重复的数字，即相同的数字只保留一个，把其余相同的数去掉，然后再把这些数从小到大排序，按照排好的顺序输出。
+
+数据范围：`1≤n≤1000` ，输入的数字大小满足 `1≤val≤500`
+
+## 输入描述
+
+第一行先输入随机整数的个数 N 。 接下来的 N 行每行输入一个整数，代表明明生成的随机数。 具体格式可以参考下面的"示例"。
+
+## 输出描述
+
+输出多行，表示输入数据处理后的结果
+
+## 示例一
+
+- 输入
+
+  ```bash
+  3
+  2
+  2
+  1
+  ```
+
+- 输出
+
+  ```bash
+  1
+  2
+  ```
+
+* 说明
+
+  ```
+  输入解释：
+  第一个数字是3，也即这个小样例的N=3，说明用计算机生成了3个1到500之间的随机整数，接下来每行一个随机数字，共3行，也即这3个随机数字为：
+  2
+  2
+  1
+  所以样例的输出为：
+  1
+  2
+  ```
+
+## 解题
+
+1. 去重，可以使用Set集合。
+2. 从小到大排序，即升序。所以直接使用TreeSet即可。TreeSet内部已经根据自然升序排列。
+3. 注意输出要换行输出
+
+## java代码
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        int len = input.nextInt();
+        TreeSet<Integer> result = new TreeSet<>();
+        for (int i = 0; i < len; i++) {
+            result.add(input.nextInt());
+        }
+        for (Integer num : result) {
+            System.out.println(num);
+        }
+    }
+}
+```
+
+
+# 【第7题】字符串最后一个单词的长度
+
+计算字符串最后一个单词的长度，单词以空格隔开，字符串长度小于5000。（注：字符串末尾不以空格为结尾）
+
+## 输入描述
+
+输入一行，代表要计算的字符串，非空，长度小于5000。
+
+## 输出描述
+
+输出一个整数，表示输入字符串最后一个单词的长度。
+
+## 示例一
+
+- 输入
+
+  ```bash
+  hello nowcoder
+  ```
+
+- 输出
+
+  ```bash
+  8
+  ```
+
+* 说明
+
+  最后一个单词为`nowcoder`，长度为8
+
+## 解题
+
+1. 这道题目很简单，特别是已经强调最后不以空格结尾，所以其实只要通过字符串的`lastIndexOf`找出最后一个空格的下标即可截取最后一个单词的内容，并输出单词长度。
+2. 若找不到最后一个空格的下标，则表示整个字符串是一个单词。直接输出字符串长度即可
+
+## java代码
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        String words = input.nextLine();
+        int index = words.lastIndexOf(" ");
+        if (index < 0) {// 找不到空格下标，表示只输入是一个单词
+            System.out.println(words.length());
+            return;
+        }
+        String word = words.substring(index + 1);//截取最后一个空格后面的部分字符串
+        System.out.println(word.length());
     }
 }
 ```
@@ -579,431 +639,311 @@ public class Main {
 }
 ```
 
-# 【第7题】字符串最后一个单词的长度
+# 【第5题】数组对元素求和最小值
 
-计算字符串最后一个单词的长度，单词以空格隔开，字符串长度小于5000。（注：字符串末尾不以空格为结尾）
+给定两个整数数组，arr1、arr2，数组元素按升序排列；
+假设从arr1、arr2中分别取出一个元素，可构成一对元素；
+现在需要取出k对元素，并对取出的所有元素求和，计算和的最小值；
+注意：两对元素对应arr1、arr2的下标是相同的，视为同一对元素。
 
 ## 输入描述
 
-输入一行，代表要计算的字符串，非空，长度小于5000。
+输入两行数组arr1、arr2
+arr1，arr2中的每个元素e， `0< e <1000`
+接下来一行，正整数k `0 < k <= arr1.size * arr2.size`
 
 ## 输出描述
 
-输出一个整数，表示输入字符串最后一个单词的长度。
+满足要求的最小值
 
 ## 示例一
 
 - 输入
 
   ```bash
-  hello nowcoder
+  1 1 2
+  1 2 3
+  2
   ```
 
 - 输出
 
   ```bash
-  8
+  4
   ```
 
-* 说明
+- 说明：
 
-  最后一个单词为`nowcoder`，长度为8
+  用例中需要取两个元素，取第一个数组第0个元素与第二个数组第0个元素组成一个元素[1,1];
+  取第一个数组第1个元素与第二个数组第0个元素组成一个元素[1,1];
+  求和为1+1+1+1=4 ,满足要求最小。
 
-## 解题
-
-1. 这道题目很简单，特别是已经强调最后不以空格结尾，所以其实只要通过字符串的`lastIndexOf`找出最后一个空格的下标即可截取最后一个单词的内容，并输出单词长度。
-2. 若找不到最后一个空格的下标，则表示整个字符串是一个单词。直接输出字符串长度即可
-
-## java代码
-
-```java
-public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        String words = input.nextLine();
-        int index = words.lastIndexOf(" ");
-        if (index < 0) {// 找不到空格下标，表示只输入是一个单词
-            System.out.println(words.length());
-            return;
-        }
-        String word = words.substring(index + 1);//截取最后一个空格后面的部分字符串
-        System.out.println(word.length());
-    }
-}
-```
-
-
-# 【第8题】明明的随机数
-
-明明生成了*N*个1到500之间的随机整数。请你删去其中重复的数字，即相同的数字只保留一个，把其余相同的数去掉，然后再把这些数从小到大排序，按照排好的顺序输出。
-
-数据范围：`1≤n≤1000` ，输入的数字大小满足 `1≤val≤500`
-
-## 输入描述
-
-第一行先输入随机整数的个数 N 。 接下来的 N 行每行输入一个整数，代表明明生成的随机数。 具体格式可以参考下面的"示例"。
-
-## 输出描述
-
-输出多行，表示输入数据处理后的结果
-
-## 示例一
+## 示例二
 
 - 输入
 
   ```bash
-  3
-  2
-  2
-  1
+  1 2 3 4 
+  4 5 6 9
+  4
   ```
 
 - 输出
 
   ```bash
-  1
-  2
+  24
   ```
 
-* 说明
 
-  ```
-  输入解释：
-  第一个数字是3，也即这个小样例的N=3，说明用计算机生成了3个1到500之间的随机整数，接下来每行一个随机数字，共3行，也即这3个随机数字为：
-  2
-  2
-  1
-  所以样例的输出为：
-  1
-  2
-  ```
 
 ## 解题
 
-1. 去重，可以使用Set集合。
-2. 从小到大排序，即升序。所以直接使用TreeSet即可。TreeSet内部已经根据自然升序排列。
-3. 注意输出要换行输出
+1. 把两个数组所有可能组成的对数全部统计存入集合中，冰将集合升序排列
+2. 然后根据需要求和的个数，从集合开头取出对应个数的值进行求和即可
 
 ## java代码
 
 ```java
+
 public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        int len = input.nextInt();
-        TreeSet<Integer> result = new TreeSet<>();
-        for (int i = 0; i < len; i++) {
-            result.add(input.nextInt());
-        }
-        for (Integer num : result) {
-            System.out.println(num);
-        }
-    }
-}
-```
-
-# 【第9题】字符串最后一个单词的长度
-
-写出一个程序，接受一个由字母、数字和空格组成的字符串，和一个字符，然后输出输入字符串中该字符的出现次数。（不区分大小写字母）
-
-数据范围： `1 ≤ n ≤ 1000`
-
-## 输入描述
-
-第一行输入一个由字母和数字以及空格组成的字符串，第二行输入一个字符。
-
-## 输出描述
-
-输出输入字符串中含有该字符的个数。（不区分大小写字母）
-
-## 示例一
-
-- 输入
-
-  ```bash
-  ABCabc
-  A
-  ```
-
-- 输出
-
-  ```bash
-  2
-  ```
-
-## 解题
-
-1. 循环查找字符串进行比较即可，注意不区分大小写！
-
-## java代码
-
-```java
-public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        String content = input.nextLine().toLowerCase(Locale.ENGLISH);
-        char tag = input.nextLine().toLowerCase(Locale.ENGLISH).charAt(0);
-        int count = 0;
-        for (int i = 0; i < content.length(); i++) {
-            if (content.charAt(i) == tag) {
-                count++;
+        String arr1Str = input.nextLine();
+        String arr2Str = input.nextLine();
+        int count = input.nextInt();
+        int[] arr1 = parseArr(arr1Str);
+        int[] arr2 = parseArr(arr2Str);
+        ArrayList<Integer> allSum = new ArrayList<>(arr1.length * arr2.length);
+        for (int n : arr1) {
+            for (int m : arr2) {
+                allSum.add(n + m);
             }
         }
+        Collections.sort(allSum);
+        int sum = 0;
+        for (int i = 0; i < count; i++) {
+            sum += allSum.get(i);
+        }
+        System.out.println(sum);
+    }
+
+    /**
+     * 将输入格式转化为int数组
+     */
+    private static int[] parseArr(String arrStr) {
+        String[] strings = arrStr.split(" ");
+        int[] arr = new int[strings.length];
+        for (int i = 0; i < strings.length; i++) {
+            arr[i] = Integer.parseInt(strings[i]);
+        }
+        return arr;
+    }
+}
+```
+
+# 【第4题】组成最大数
+
+小组中每位都有一张卡片，卡片上是6位内的正整数，将卡片连起来可以组成多种数字，计算组成的最大数字。
+
+
+
+## 输入描述
+
+“,”号分割的多个正整数字符串，不需要考虑非数字异常情况，小组最多25个人
+
+
+
+## 输出描述
+
+最大的数字字符串
+
+
+
+## 示例一
+
+* 输入
+
+  ```
+  22,221  
+  ```
+
+* 输出
+
+  ```
+  22221
+  ```
+
+## 示例二
+
+* 输入
+
+  ```
+  4589,101,41425,9999
+  ```
+
+* 输出
+
+  ```
+  9999458941425101
+  ```
+
+
+
+## 解题
+
+1. 按字符串自然大小排序之后，数字字符从大到小依次为9>8>7...3>2>1。
+
+2. 且 字符串“89”要大于“723”，因为字符串自然排序匹配规则是根据第一个字符比较大小，若相等，则比较下一个，超出部分摄取比对。
+
+3. 所以只需要对输入的所有数字字符串进行排序，之后按顺序输出即可！
+
+
+
+## java代码
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        String content = input.next();
+        String[] split = content.split(",");
+        Arrays.sort(split);
+        for (int i = split.length - 1; i >= 0; i--) {
+            System.out.print(split[i]);
+        }
+    }
+}
+```
+
+# 【第3题】猴子爬山
+
+一天一只顽猴想去从山脚爬到山顶，途中经过一个有个N个台阶的阶梯，但是这猴子有一个习惯： 每一次只能跳1步或跳3步，试问猴子通过这个阶梯有多少种不同的跳跃方式？
+
+
+
+## 输入描述
+
+输入只有一个整数N（0<N<=50）此阶梯有多少个阶梯
+
+
+
+## 输出描述
+
+输出有多少种跳跃方式（解决方案数）
+
+
+
+## 示例一
+
+* 输入
+
+  ```
+  50
+  ```
+
+* 输出
+
+  ```
+  122106097
+  ```
+
+
+
+## 示例二
+
+* 输入
+
+  ```
+  3
+  ```
+
+* 输出
+
+  ```
+  2
+  ```
+
+
+
+## 解题
+
+分析规律：
+
+```
+台阶个数，对应跳跃方案数
+0个台阶，有1个方案。那就是不跳
+1个台阶，有1个方案。跳1个台阶（1）
+2个台阶，有1个方案。一个一个跳，跳两次（12）
+3个台阶，有2个方案。一个一个跳，跳三次。以及一次性跳三阶（123,3）
+4个台阶，有3个方案。（1234,14,34）
+5个台阶，有4个方案。（12345,125,145,345）
+6个台阶，有6个方案。（123456,1236,1256,1456,3456,36）
+7个台阶，有9个方案。（123456789....369)
+
+发现规律
+1、台阶数n小于3时，都只有一种方案。
+2、台阶数n大于等于3时，跳跃方案恰好等于(n-1)的台阶方案数+(n-3)的台阶方案数。例如：
+台阶n=6的方案数等于5的台阶方案数+3的台阶方案数。
+```
+
+## java代码
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        int num = input.nextInt();
+        int count = cal(num);
         System.out.println(count);
     }
+
+    private static int cal(int num) {
+        if (num < 3) {
+            return 1;
+        }
+        return cal(num - 1) + cal(num - 3);
+    }
+
+    //台阶数：0  1  2  3  4  5  6  7  8  9
+    //方案数：1  1  1  2  3  4  6  9  13 19
 }
 ```
 
-# 【第10题】字符串分割
+# 【第2题】勾股数元组
 
-* 输入一个字符串，请按长度为8拆分每个输入字符串并进行输出；
-* 长度不是8整数倍的字符串请在后面补数字0，空字符串不处理。
+如果三个正整数A、B、C ,A²+B²=C²则为勾股数
+如果ABC之间两两互质，即A与B，A与C，B与C均互质没有公约数，
+则称其为勾股数元组。
+请求出给定n~m范围内所有的勾股数元组
 
 ## 输入描述
 
-连续输入字符串(每个字符串长度小于等于100)
+起始范围
+`1 < n < 10000`
+`n < m < 10000`
 
 ## 输出描述
 
-依次输出所有分割后的长度为8的新字符串
+ABC保证`A<B<C`
+输出格式`A B C`
+多组勾股数元组，按照A B C升序的排序方式输出。
+若给定范围内，找不到勾股数元组时，输出`Na`。
 
 ## 示例一
 
 - 输入
 
   ```bash
-  abc
+  1
+  20
   ```
 
 - 输出
 
   ```bash
-  abc00000
-  ```
-
-## 解题
-
-1. 这道题的解法应该有N多种，我的想法是每次循环8次，从输入的字符串s中依次往后取8个字符，若s字符串已经被使用完，则补0。
-2. 每一轮8次循环结束后，判断字符串s是不是已经用完。则结束循环。
-3. 注意空字符串不处理。
-
-## java代码
-
-```java
-
-public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        deal(input.nextLine());
-    }
-
-    private static void deal(String s) {
-        int index = 0;
-        int length = s.length();
-        while (index < length) {// 结束条件，包含空字符串情况
-            StringBuilder sb = new StringBuilder(8);
-            for (int i = 0; i < 8; i++) {
-                if (index < length) {
-                    sb.append(s.charAt(index));
-                } else {
-                    sb.append('0');// 若字符已经用完，下标已越界，则追加0
-                }
-                index++;
-            }
-            System.out.println(sb);
-        }
-    }
-}
-
-```
-
-# 【第11题】进制转换
-
-写出一个程序，接受一个十六进制的数，输出该数值的十进制表示。
-
-数据范围：保证结果在
-$$
-1 ≤ n ≤ 2^{31} - 1
-$$
-
-
-## 输入描述
-
-输入一个十六进制的数值字符串。
-
-## 输出描述
-
-输出该数值的十进制字符串。
-
-## 示例一
-
-- 输入
-
-  ```bash
-  0xAA
-  ```
-
-- 输出
-
-  ```bash
-  170
-  ```
-
-## 解题
-
-1. 题目已经将值结果保证在Integer取值范围，所以可以直接使用Integer
-2. 注意用例，16进制开头是包含`0x`的，而Java的`Integer.parseInt` 是不包含`0x`的
-
-## java代码
-
-```java
-public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        String rex = input.nextLine();
-        // substring(2) ，这里需要去掉前面两位 0x
-        System.out.println(Integer.parseInt(rex.substring(2), 16));
-    }
-}
-```
-
-# 【第12题】质素因子
-
-功能：输入一个正整数，按照从小到大的顺序输出它的所有质因子（重复的也要列举）（如180的质因子为2 2 3 3 5 ）
-
-数据范围：
-$$
-1 ≤ n ≤ 2 × 10^9 + 14
-$$
-
-## 输入描述
-
-输入一个整数
-
-## 输出描述
-
-按照从小到大的顺序输出它的所有质数的因子，以空格隔开。
-
-## 示例一
-
-- 输入
-
-  ```bash
-  180
-  ```
-
-- 输出
-
-  ```bash
-  2 2 3 3 5
-  ```
-
-
-## 解题
-
-1. 这道题目一开始看确实有点懵，题目是要求分解质因数，只是要求所有因数都是质数。
-2. 注意数据范围达到long的取值范围，一不小心就会性能超标
-3. 这道题折腾了两三次，终于是通过了所有测试用例。（特别是：2000000014，一不小心就性能超标）
-4. 其他的解题思路请看代码注释，不一定是最优解，但是通过了。
-5. 如果不对的地方，请指出！谢谢
-
-## java代码
-
-```java
-public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        long num = input.nextLong();
-        deal(num);
-    }
-
-    private static void deal(long num) {
-        long realNum = num;
-        double sqrt = Math.sqrt(num);
-        long prime = 2;// 当前可疑质素因子
-        ArrayList<Long> list = new ArrayList<>();
-        while (true) {
-            if (num % prime == 0) {
-                list.add(prime);//找到质数因子
-                num = num / prime;//更新num，对新的num循环查找下一个质数因子
-                continue;
-            }
-            prime = nextPrime(prime);
-            if (num < prime || prime > sqrt) {
-                // 若可以质数因子超过num本身，或者质数因子超过原始num的平方根，则无需继续查找下去。但有一种特殊情况
-                break;
-            }
-        }
-        // 特殊情况，存在质数因子比原始正整数num的平方根还大的情况，但这种情况下，只会存在1个比num的平方根大的质数因子
-        if (num > prime && realNum % num == 0) {
-            list.add(num);
-        }
-        if (list.size() == 0) {
-            list.add(num);// 若没有找到质数因子，则输出其本身
-        }
-
-        // 拼接输出，虽然最后多一个空格也可以通过，强逼症去掉最后空格
-        StringBuilder sb = new StringBuilder();
-        for (Long l : list) {
-            sb.append(l).append(' ');
-        }
-        System.out.println(sb.delete(sb.length() - 1, sb.length()));
-    }
-
-    /**
-     * 查找n的下一个质素
-     */
-    private static long nextPrime(long n) {
-        long m = n + 1;
-        if (isPrime(m)) {
-            return m;
-        }
-        return nextPrime(m);
-    }
-
-    /**
-     * 判断一个数是否是质数
-     */
-    private static boolean isPrime(long n) {
-        if (n < 2) {
-            return false;
-        }
-        double sqrt = Math.sqrt(n);
-        for (long i = 2; i <= sqrt; i++) {
-            if (n % i == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-
-```
-
-# 【第13题】叠积木
-
-积⽊宽⾼相等，长度不等，每层只能放⼀个或拼接两个积⽊，要求每层长度相等，求最⼤层数。
-
-## 输入描述
-
-给定积⽊的长度，以空格分隔，例如:3 6 6 3。
-
-## 输出描述
-
-如果可以搭建，返回最⼤层数，如果不可以返回-1。
-
-## 示例一
-
-- 输入
-
-  ```bash
-  3 6 6 3
-  ```
-
-- 输出
-
-  ```bash
-  3
+  3 4 5
+  5 12 13
+  8 15 17
   ```
 
 ## 示例二
@@ -1011,83 +951,145 @@ public class Main {
 - 输入
 
   ```bash
-  1 4 2 3 6
+  5
+  10
   ```
 
 - 输出
 
   ```bash
-  -1
+  Na
   ```
 
 ## 解题
 
-1. 读懂题目的要求，积木每一层只能是1块，或者2块拼接
-2. 必须每一层的长度相等，否则算为不可搭建，则输出`-1`
-3. 分析规律：将积木长度进行排序后，最长的积木只能两种情况：1、单独一块去搭建；2、跟最小长度那一块去搭建
+1. 首先，写一个函数判断两个数之间互为质数。可以用最大公约数为1的方式解决
+2. 然后根据已知条件，`a<b<c` ，可以使用三层循环，分别根据条件判断，符合条件则输出，并记录符合条件次数，若没有符合条件的结果，则循环结束后输出`Na`
 
 ## java代码
 
 ```java
-import java.util.LinkedList;
-import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        int n = input.nextInt();
+        int m = input.nextInt();
+        int count = 0;
+        for (int a = n; a < m; a++) {
+            for (int b = a + 1; b < m; b++) {
+                for (int c = b + 1; c < m; c++) {
+                    if (hz(a, b) && hz(a, c) && hz(b, c) && a * a + b * b == c * c) {
+                        System.out.println(a + " " + b + " " + c);
+                        count++;
+                    }
+                }
+            }
+        }
+        if (count == 0) {
+            System.out.println("Na");
+        }
+    }
+
+    /**
+     * 判断n、m是否互质。思想，找不到比1大的公约数，则互为质数
+     */
+    private static boolean hz(int n, int m) {
+        int t;
+        while (m > 0) {
+            t = n % m;
+            n = m;
+            m = t;
+        }
+        return n == 1;
+    }
+}
+```
+# 【第1题】TLV编码
+
+TLV编码是按TagLengthValue格式进行编码的，一段码流中的信元用tag标识，tag在码流中唯一不重复，length表示信元value的长度，value表示信元的值，码流以某信元的tag开头，tag固定占一个字节，length固定占两个字节，字节序为小端序，现给定tlv格式编码的码流以及需要解码的信元tag，请输出该信元的value。
+
+输入码流的16进制字符中，不包括小写字母；
+且要求输出的16进制字符串中也不要包含小写字母；
+码流字符串的最大长度不超过50000个字节。
+
+## 输入描述
+
+第一行为第一个字符串 ，表示待解码信元的tag；
+输入第二行为一个字符串， 表示待解码的16进制码流；
+字节之间用空格分割。
+
+## 输出描述
+
+输出一个字符串，表示待解码信元以16进制表示的value。
+
+## 示例一
+
+- 输入
+
+  ```bash
+  31
+  32 01 00 AE 90 02 00 01 02 30 03 00 AB 32 31 31 02 00 32 33 33 01 00 CC
+  ```
+
+- 输出
+
+  ```bash
+  32 33
+  ```
+
+- 说明：
+  需要解析的信源的tag是31；
+  从码流的起始处开始匹配，tag为32的信元长度为1(01 00,小端序表示为1)；
+  第二个信元的tag为90 其长度为2；
+  第三个信元的tag为30 其长度为3；
+  第四个信元的tag为31 其长度为2(02 00)；
+  所以返回长度后面的两个字节即可 为 32 33。
+
+## 解题
+
+1. 这道题主要是要理解`小端序`的概念，其实就是两个十六进制反过来写，处理的时候需要反过来拼接
+2. 其他题目已经说的比较清楚了，tag开头占1个字节，length固定占两个字节，再根据length取出后面的value值。依次往后查询到目标tag，取出对应的value即可。
+3. 注意length的小端序处理
+
+## java代码
+
+```java
 
 public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        String s = input.nextLine();
-        String[] split = s.split(" ");
-        LinkedList<Integer> list = new LinkedList<>();
-        for (String ss : split) {
-            list.add(Integer.parseInt(ss));
-        }
-        // 降序排列
-        list.sort((o1, o2) -> o2 - o1);
-        int deal = deal(list);
-        System.out.println(deal);
-    }
-
-    private static int deal(LinkedList<Integer> list) {
-        if (list.size() == 0) {// 没有积木，0层
-            return 0;
-        }
-        int count = 1;
-        if (list.size() == 1) {// 只有1块积木，只有1层
-            return count;
-        }
-        LinkedList<Integer> temp = new LinkedList<>(list);// 拷贝一份数据备用
-        int result = recur(temp, temp.removeFirst(), count);// 处理最长那一块单独作为1层的情况
-        if (result > 0) {
-            return result;// 若搭建成功，肯定比下面那种情况层数要多
-        }
-        // 若上面情况搭建不成功，则将最长那一块与最短那一块作为一层，继续分析处理
-        int base = list.removeFirst() + list.removeLast();
-        return recur(list, base, count);
-    }
-
-    /**
-     * @param list  所有积木
-     * @param base  地基长度
-     * @param count 层数
-     */
-    private static int recur(LinkedList<Integer> list, int base, int count) {
-        if (list.size() == 0) {
-            return count;// 且整个递归过程没有执行最后的return -1，且积木刚好用完。则返回层数
-        }
-        Integer value = list.removeFirst();//移除剩下最长那一块去跟地基比较
-        if (value == base) {// 表示当前这块与地基长度也相同
-            return recur(list, base, count + 1);// 匹配成功，层级+1
-        }
-        if (list.size() > 0) {// 若还有积木，则取出最小的那一块加上上面所剩最长那一块去与地基比较
-            Integer integer = list.removeLast();
-            if (value + integer == base) {
-                return recur(list, base, count + 1);// 匹配成功，层级+1
+        String tag = input.nextLine();
+        String content = input.nextLine();
+        String[] split = content.split(" ");
+        for (int i = 0; i < split.length; i++) {
+            String curTag = split[i];
+            String len1 = split[++i];
+            String len2 = split[++i];
+            int length = formatRadix16To10(len2 + len1);// 注意小端序要反过来相加
+            // 若tag不是目标，则跳过
+            if (!tag.equalsIgnoreCase(curTag)) {
+                i += length;// 跳过无用的value值，查找下一个tag
+                continue;
             }
+            System.out.println(takeString(split, i + 1, length));
+            break;
         }
-        return -1;// 若上诉情况都不符合，则表示积木已经无法满足题目要求，返回-1
+    }
+
+    private static String takeString(String[] strings, int start, int len) {
+        StringBuilder result = new StringBuilder();
+        for (int i = start; i < strings.length && i < start + len; i++) {
+            result.append(strings[i]).append(" ");
+        }
+        if (result.length() > 0) {
+            result.delete(result.length() - 1, result.length());
+        }
+        return result.toString();
+    }
+
+    // 字符串16进制值转10进制
+    private static int formatRadix16To10(String str) {
+        return Integer.parseInt(str, 16);
     }
 }
-
 ```
-
-持续更新中...
