@@ -1,22 +1,23 @@
-# 猴子爬山
+
+##  猴子爬山
 
 一天一只顽猴想去从山脚爬到山顶，途中经过一个有个N个台阶的阶梯，但是这猴子有一个习惯： 每一次只能跳1步或跳3步，试问猴子通过这个阶梯有多少种不同的跳跃方式？
 
 
 
-## 输入描述
+**【输入描述】**
 
 输入只有一个整数N（0<N<=50）此阶梯有多少个阶梯
 
 
 
-## 输出描述
+**【输出描述】**
 
 输出有多少种跳跃方式（解决方案数）
 
- 
 
-## 示例一
+
+**【示例一】**
 
 * 输入
 
@@ -30,9 +31,9 @@
   122106097
   ```
 
-  
 
-## 示例二
+
+**【示例二】**
 
 * 输入
 
@@ -48,7 +49,7 @@
 
 
 
-## 解题
+**【解题思路】**
 
 分析规律：
 
@@ -69,25 +70,25 @@
 台阶n=6的方案数等于5的台阶方案数+3的台阶方案数。
 ```
 
-## java代码
+**【代码】**
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        int num = input.nextInt();
-        int count = cal(num);
-        System.out.println(count);
-    }
+  public static void main(String[] args) {
+    Scanner input = new Scanner(System.in);
+    int num = input.nextInt();
+    int count = cal(num);
+    System.out.println(count);
+  }
 
-    private static int cal(int num) {
-        if (num < 3) {
-            return 1;
-        }
-        return cal(num - 1) + cal(num - 3);
+  private static int cal(int num) {
+    if (num < 3) {
+      return 1;
     }
+    return cal(num - 1) + cal(num - 3);
+  }
 
-    //台阶数：0  1  2  3  4  5  6  7  8  9
-    //方案数：1  1  1  2  3  4  6  9  13 19
+  //台阶数：0  1  2  3  4  5  6  7  8  9
+  //方案数：1  1  1  2  3  4  6  9  13 19
 }
 ```

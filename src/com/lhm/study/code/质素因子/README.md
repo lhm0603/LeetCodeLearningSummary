@@ -1,4 +1,5 @@
-# 质素因子
+
+## 质素因子
 
 功能：输入一个正整数，按照从小到大的顺序输出它的所有质因子（重复的也要列举）（如180的质因子为2 2 3 3 5 ）
 
@@ -7,30 +8,30 @@ $$
 1 ≤ n ≤ 2 × 10^9 + 14
 $$
 
-## 输入描述
+**【输入描述】**
 
 输入一个整数
 
-## 输出描述
+**【输出描述】**
 
 按照从小到大的顺序输出它的所有质数的因子，以空格隔开。
 
-## 示例一
+**【示例一】**
 
 - 输入
 
   ```bash
   180
   ```
-  
+
 - 输出
 
   ```bash
   2 2 3 3 5
   ```
-  
 
-## 解题
+
+**【解题思路】**
 
 1. 这道题目一开始看确实有点懵，题目是要求分解质因数，只是要求所有因数都是质数。
 2. 注意数据范围达到long的取值范围，一不小心就会性能超标
@@ -38,75 +39,75 @@ $$
 4. 其他的解题思路请看代码注释，不一定是最优解，但是通过了。
 5. 如果不对的地方，请指出！谢谢
 
-## java代码
+**【代码】**
 
 ```java
 public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        long num = input.nextLong();
-        deal(num);
+  public static void main(String[] args) {
+    Scanner input = new Scanner(System.in);
+    long num = input.nextLong();
+    deal(num);
+  }
+
+  private static void deal(long num) {
+    long realNum = num;
+    double sqrt = Math.sqrt(num);
+    long prime = 2;// 当前可疑质素因子
+    ArrayList<Long> list = new ArrayList<>();
+    while (true) {
+      if (num % prime == 0) {
+        list.add(prime);//找到质数因子
+        num = num / prime;//更新num，对新的num循环查找下一个质数因子
+        continue;
+      }
+      prime = nextPrime(prime);
+      if (num < prime || prime > sqrt) {
+        // 若可以质数因子超过num本身，或者质数因子超过原始num的平方根，则无需继续查找下去。但有一种特殊情况
+        break;
+      }
+    }
+    // 特殊情况，存在质数因子比原始正整数num的平方根还大的情况，但这种情况下，只会存在1个比num的平方根大的质数因子
+    if (num > prime && realNum % num == 0) {
+      list.add(num);
+    }
+    if (list.size() == 0) {
+      list.add(num);// 若没有找到质数因子，则输出其本身
     }
 
-    private static void deal(long num) {
-        long realNum = num;
-        double sqrt = Math.sqrt(num);
-        long prime = 2;// 当前可疑质素因子
-        ArrayList<Long> list = new ArrayList<>();
-        while (true) {
-            if (num % prime == 0) {
-                list.add(prime);//找到质数因子
-                num = num / prime;//更新num，对新的num循环查找下一个质数因子
-                continue;
-            }
-            prime = nextPrime(prime);
-            if (num < prime || prime > sqrt) {
-                // 若可以质数因子超过num本身，或者质数因子超过原始num的平方根，则无需继续查找下去。但有一种特殊情况
-                break;
-            }
-        }
-        // 特殊情况，存在质数因子比原始正整数num的平方根还大的情况，但这种情况下，只会存在1个比num的平方根大的质数因子
-        if (num > prime && realNum % num == 0) {
-            list.add(num);
-        }
-        if (list.size() == 0) {
-            list.add(num);// 若没有找到质数因子，则输出其本身
-        }
-
-        // 拼接输出，虽然最后多一个空格也可以通过，强逼症去掉最后空格
-        StringBuilder sb = new StringBuilder();
-        for (Long l : list) {
-            sb.append(l).append(' ');
-        }
-        System.out.println(sb.delete(sb.length() - 1, sb.length()));
+    // 拼接输出，虽然最后多一个空格也可以通过，强逼症去掉最后空格
+    StringBuilder sb = new StringBuilder();
+    for (Long l : list) {
+      sb.append(l).append(' ');
     }
+    System.out.println(sb.delete(sb.length() - 1, sb.length()));
+  }
 
-    /**
-     * 查找n的下一个质素
-     */
-    private static long nextPrime(long n) {
-        long m = n + 1;
-        if (isPrime(m)) {
-            return m;
-        }
-        return nextPrime(m);
+  /**
+   * 查找n的下一个质素
+   */
+  private static long nextPrime(long n) {
+    long m = n + 1;
+    if (isPrime(m)) {
+      return m;
     }
+    return nextPrime(m);
+  }
 
-    /**
-     * 判断一个数是否是质数
-     */
-    private static boolean isPrime(long n) {
-        if (n < 2) {
-            return false;
-        }
-        double sqrt = Math.sqrt(n);
-        for (long i = 2; i <= sqrt; i++) {
-            if (n % i == 0) {
-                return false;
-            }
-        }
-        return true;
+  /**
+   * 判断一个数是否是质数
+   */
+  private static boolean isPrime(long n) {
+    if (n < 2) {
+      return false;
     }
+    double sqrt = Math.sqrt(n);
+    for (long i = 2; i <= sqrt; i++) {
+      if (n % i == 0) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 ```

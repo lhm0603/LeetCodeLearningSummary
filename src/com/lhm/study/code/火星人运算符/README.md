@@ -1,4 +1,5 @@
-# 火星人运算符
+
+##  火星人运算符
 
 已知火星人使用的运算符为#、$，其与地球人的等价公式如下：
 
@@ -10,7 +11,7 @@
 地球人公式按C语言规则计算
 火星人公式中，$的优先级高于#，相同的运算符，按从左到右的顺序计算 现有一段火星人的字符串报文，请你来翻译并计算结果。
 
-## 输入描述
+**【输入描述】**
 
 火星人字符串表达式（结尾不带回车换行）
 
@@ -32,11 +33,11 @@
   12345678987654321$54321 //32位整数计算溢出
   ```
 
-## 输出描述
+**【输出描述】**
 
 根据输入的火星人字符串输出计算结果（结尾不带回车换行）
 
-## 示例一
+**【示例一】**
 
 * 输入
 
@@ -62,7 +63,7 @@
   226
   ```
 
-## 解题
+**【解题思路】**
 
 1. 先将两个公式抽出一个方法，方便使用
 2. 按符号优先级，先根据优先级较低的符号 `#` 进行拆分
@@ -72,57 +73,57 @@
 
 
 
-## java代码
+**【代码】**
 
 ```java
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
-        String content = input.nextLine();
-        String[] split = content.split("#");// 先根据优先级较低符号拆分
-        int[] nums = new int[split.length];
-        for (int i = 0; i < split.length; i++) {
-            String s = split[i];
-            if (!s.contains("$")) {// 拆分部分包不含$，则表示一个单独的数字
-                nums[i] = Integer.parseInt(s);
-                continue;
-            }
-            nums[i] = deal$(s);// 拆分部分包含 $ 运算，则先将 $的运算表达式结果计算出来
-        }
-        
-        // 以下部分是计算只有 # 参与的表达式，并最终输出结果
-        int x = nums[0];
-        for (int i = 1; i < nums.length; i++) {
-            int y = nums[i];
-            x = calculate2(x, y);
-        }
-        System.out.println(x);
+  public static void main(String[] args) {
+    Scanner input = new Scanner(System.in);
+    String content = input.nextLine();
+    String[] split = content.split("#");// 先根据优先级较低符号拆分
+    int[] nums = new int[split.length];
+    for (int i = 0; i < split.length; i++) {
+      String s = split[i];
+      if (!s.contains("$")) {// 拆分部分包不含$，则表示一个单独的数字
+        nums[i] = Integer.parseInt(s);
+        continue;
+      }
+      nums[i] = deal$(s);// 拆分部分包含 $ 运算，则先将 $的运算表达式结果计算出来
     }
 
-    private static int deal$(String str) { // 计算只有 $ 参与的表达式，并返回计算结果
-        String[] split = str.split("\\$");
-        int x = Integer.parseInt(split[0]);
-        for (int i = 1; i < split.length; i++) {
-            int y = Integer.parseInt(split[i]);
-            x = calculate1(x, y);
-        }
-        return x;
+    // 以下部分是计算只有 # 参与的表达式，并最终输出结果
+    int x = nums[0];
+    for (int i = 1; i < nums.length; i++) {
+      int y = nums[i];
+      x = calculate2(x, y);
     }
+    System.out.println(x);
+  }
 
-    /**
-     * 火星文 $ 运算
-     */
-    private static int calculate1(int x, int y) {
-        return 3 * x + y + 2;
+  private static int deal$(String str) { // 计算只有 $ 参与的表达式，并返回计算结果
+    String[] split = str.split("\\$");
+    int x = Integer.parseInt(split[0]);
+    for (int i = 1; i < split.length; i++) {
+      int y = Integer.parseInt(split[i]);
+      x = calculate1(x, y);
     }
+    return x;
+  }
 
-    /**
-     * 火星文 # 运算
-     */
-    private static int calculate2(int x, int y) {
-        return 2 * x + 3 * y + 4;
-    }
+  /**
+   * 火星文 $ 运算
+   */
+  private static int calculate1(int x, int y) {
+    return 3 * x + y + 2;
+  }
+
+  /**
+   * 火星文 # 运算
+   */
+  private static int calculate2(int x, int y) {
+    return 2 * x + 3 * y + 4;
+  }
 }
 ```
